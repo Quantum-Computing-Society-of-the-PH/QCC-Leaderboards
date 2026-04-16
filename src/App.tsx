@@ -1,6 +1,6 @@
 import "./App.css";
 import { type Round, getOverallRanked, getRankedByRound } from "./participant";
-import { Trophy } from "lucide-react";
+import { Atom } from "lucide-react";
 import { useState } from "react";
 import Podium from "./components/Podium";
 import LeaderboardTable from "./components/LeaderboardTable";
@@ -8,18 +8,18 @@ import LeaderboardTable from "./components/LeaderboardTable";
 type Tab = Round | "overall";
 
 const tabs: { key: Tab; label: string; color: string }[] = [
+  { key: "easy", label: "Easy", color: "bg-easy/20 text-easy" },
+  { key: "medium", label: "Medium", color: "bg-medium/20 text-medium" },
+  { key: "hard", label: "Hard", color: "bg-hard/20 text-hard" },
   {
     key: "overall",
     label: "Overall",
     color: "bg-primary text-primary-foreground",
   },
-  { key: "easy", label: "Easy", color: "bg-easy/20 text-easy" },
-  { key: "medium", label: "Medium", color: "bg-medium/20 text-medium" },
-  { key: "hard", label: "Hard", color: "bg-hard/20 text-hard" },
 ];
 
 function App() {
-  const [active, setActive] = useState<Tab>("overall");
+  const [active, setActive] = useState<Tab>("easy");
   const rows =
     active === "overall" ? getOverallRanked() : getRankedByRound(active);
 
@@ -28,9 +28,9 @@ function App() {
       <div className="min-h-screen flex flex-col items-center px-4 py-10 sm:py-16">
         {/* Header */}
         <div className="flex items-center gap-3 mb-2 animate-slide-in">
-          <Trophy className="w-8 h-8 text-primary" />
+          <Atom className="w-8 h-8 text-primary" />
           <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
-            Quiz Bee Leaderboard
+            Circuit Crunch Leaderboard
           </h1>
         </div>
         <p
