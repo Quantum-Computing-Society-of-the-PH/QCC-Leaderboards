@@ -1,121 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import "./App.css";
+import { type Round, getOverallRanked, getRankedByRound } from "./participant";
+import { Trophy } from "lucide-react";
+import { useState } from "react";
+import Podium from "./components/Podium";
+import LeaderboardTable from "./components/LeaderboardTable";
+
+type Tab = Round | "overall";
+
+const tabs: { key: Tab; label: string; color: string }[] = [
+  {
+    key: "overall",
+    label: "Overall",
+    color: "bg-primary text-primary-foreground",
+  },
+  { key: "easy", label: "Easy", color: "bg-easy/20 text-easy" },
+  { key: "medium", label: "Medium", color: "bg-medium/20 text-medium" },
+  { key: "hard", label: "Hard", color: "bg-hard/20 text-hard" },
+];
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [active, setActive] = useState<Tab>("overall");
+  const rows =
+    active === "overall" ? getOverallRanked() : getRankedByRound(active);
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+      <div className="min-h-screen flex flex-col items-center px-4 py-10 sm:py-16">
+        {/* Header */}
+        <div className="flex items-center gap-3 mb-2 animate-slide-in">
+          <Trophy className="w-8 h-8 text-primary" />
+          <h1 className="font-display text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+            Quiz Bee Leaderboard
+          </h1>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+        <p
+          className="text-muted-foreground text-sm mb-8 animate-slide-in"
+          style={{ animationDelay: "100ms" }}
         >
-          Count is {count}
-        </button>
-      </section>
+          Live rankings across all rounds
+        </p>
 
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
+        {/* Tabs */}
+        <div className="flex gap-2 mb-8 flex-wrap justify-center">
+          {tabs.map((t) => (
+            <button
+              key={t.key}
+              onClick={() => setActive(t.key)}
+              className={`px-4 py-2 rounded-lg font-display text-sm font-semibold transition-all ${
+                active === t.key
+                  ? t.color
+                  : "bg-secondary text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t.label}
+            </button>
+          ))}
         </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        {/* Podium */}
+        {rows.length >= 3 && <Podium top3={rows.slice(0, 3)} />}
+
+        {/* Table */}
+        <div className="w-full max-w-2xl bg-card rounded-xl border border-border overflow-hidden">
+          <LeaderboardTable rows={rows} />
+        </div>
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
