@@ -5,16 +5,29 @@ export interface Participant {
   scores: Record<Round, number>;
 }
 
-export const participants: Participant[] = [
-  { name: "Maria Santos", scores: { easy: 50, medium: 40, hard: 30 } },
-  { name: "Juan Dela Cruz", scores: { easy: 45, medium: 45, hard: 35 } },
-  { name: "Ana Reyes", scores: { easy: 50, medium: 35, hard: 25 } },
-  { name: "Carlos Garcia", scores: { easy: 40, medium: 50, hard: 20 } },
-  { name: "Bea Lim", scores: { easy: 35, medium: 30, hard: 45 } },
-  { name: "David Cruz", scores: { easy: 30, medium: 25, hard: 40 } },
-  { name: "Elena Torres", scores: { easy: 50, medium: 20, hard: 15 } },
-  { name: "Francis Tan", scores: { easy: 25, medium: 35, hard: 30 } },
-];
+export const participants: Participant[] = [];
+
+export function getParticipants() {
+  fetch(
+    `https://docs.google.com/spreadsheets/d/1fbP6cAe33PF3VRhfmpsMuGiyIkQYCdIariZU-H0xedg/export?format=csv&gid=89917680`,
+  ).then((res) => {
+    res.text().then((data) => {
+      const lines = data.split("\r\n").slice(1);
+      const newParticipants: Participant[] = lines.map((line) => {
+        const [name, easy, medium, hard] = line.split(",");
+        return {
+          name,
+          scores: {
+            easy: parseInt(easy),
+            medium: parseInt(medium),
+            hard: parseInt(hard),
+          },
+        };
+      });
+      participants.push(...newParticipants);
+    });
+  });
+}
 
 export function getRankedByRound(round: Round) {
   return [...participants]
